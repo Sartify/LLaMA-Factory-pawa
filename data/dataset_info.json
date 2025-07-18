@@ -1,4 +1,12 @@
 {
+  "xlam-function-calling-60k-sharegpt": {
+    "hf_hub_url": "Beryex/xlam-function-calling-60k-sharegpt",
+    "formatting": "sharegpt",
+    "columns": {
+      "messages": "conversations",
+      "tools": "tools"
+    }
+  },
   "identity": {
     "file_name": "identity.json"
   },

@@ -1941,3 +1941,86 @@ register_template(
     format_user=StringFormatter(slots=["<human>:{{content}}\n<bot>:"]),
     format_assistant=StringFormatter(slots=["{{content}}\n"]),
 )
+
+# ==================================== Pawa Template ====================================
+
+
+@dataclass
+class PawaTemplate(Template):
+    r"""A template copied from the Llama2Template, but with a better custumized jinja template for function calling."""
+
+    @override
+    def _encode(
+        self,
+        tokenizer: "PreTrainedTokenizer",
+        messages: list[dict[str, str]],
+        system: str,
+        tools: str,
+    ) -> list[list[int]]:
+        system = system or self.default_system
+        encoded_messages = []
+        for i, message in enumerate(messages):
+            elements = []
+
+            system_text = ""
+            if i == 0:
+                elements += self.format_prefix.apply()
+                if system or tools:
+                    tool_text = self.format_tools.apply(content=tools)[0] if tools else ""
+                    system_text = self.format_system.apply(content=(system + tool_text))[0]
+
+            if message["role"] == Role.USER:
+                elements += self.format_user.apply(content=system_text + message["content"])
+            elif message["role"] == Role.ASSISTANT:
+                elements += self.format_assistant.apply(content=message["content"])
+            elif message["role"] == Role.OBSERVATION:
+                elements += self.format_observation.apply(content=message["content"])
+            elif message["role"] == Role.FUNCTION:
+                elements += self.format_function.apply(content=message["content"])
+            else:
+                raise NotImplementedError("Unexpected role: {}".format(message["role"]))
+
+            encoded_messages.append(self._convert_elements_to_ids(tokenizer, elements))
+
+        return encoded_messages
+
+    def _get_jinja_template(self, tokenizer: "PreTrainedTokenizer") -> str:
+        with open("pawa/template.jinja", encoding="utf-8") as f:
+            jinja_template = f.read()
+        return jinja_template
+
+
+# copytied from gemma3 template
+register_template(
+    name="gemma3-pawa",
+    format_user=StringFormatter(slots=["<start_of_turn>user\n{{content}}<end_of_turn>\n<start_of_turn>model\n"]),
+    format_assistant=StringFormatter(slots=["{{content}}<end_of_turn>\n"]),
+    format_system=StringFormatter(slots=["{{content}}\n\n"]),
+    format_function=FunctionFormatter(slots=["{{content}}<end_of_turn>\n"], tool_format="qwen"),
+    format_observation=StringFormatter(
+        slots=["<start_of_turn>tool\n{{content}}<end_of_turn>\n<start_of_turn>model\n"]
+    ),
+    format_tools=ToolFormatter(tool_format="qwen"),
+    format_prefix=EmptyFormatter(slots=[{"bos_token"}]),
+    stop_words=["<end_of_turn>"],
+    replace_eos=True,
+    mm_plugin=get_mm_plugin("gemma3", image_token="<image_soft_token>"),
+    template_class=PawaTemplate,
+    replace_jinja_template=True,
+)
+
+# tools = [{
+#     "name": "search",
+#     "description": "Search the web",
+#     "parameters": {...}
+# }]
+#
+# utils = QwenToolUtils()
+# formatted_tools = utils.tool_formatter(tools)  # Returns XML-wrapped tool descriptions
+#
+# # When model responds with tool calls:
+# response = """
+# <tool_call>
+# {"name": "search", "arguments": {"query": "weather"}}
+# </tool_call>
+# """
