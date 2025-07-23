@@ -51,6 +51,13 @@ def run_sft(
     dataset_module = get_dataset(template, model_args, data_args, training_args, stage="sft", **tokenizer_module)
     model = load_model(tokenizer, model_args, finetuning_args, training_args.do_train)
 
+    # NOTE: customized code for fix the chat_template inside processor to keep consistency with tokenizer
+    from ...extras.customized_utils import fix_chat_template_for_processor
+
+    if "processor" in tokenizer_module and tokenizer_module["processor"] is not None:
+        tokenizer_module["processor"] = fix_chat_template_for_processor(tokenizer_module["processor"])
+    # NOTE: end of customized code
+
     if getattr(model, "is_quantized", False) and not training_args.do_train:
         setattr(model, "_hf_peft_config_loaded", True)  # hack here: make model compatible with prediction
 
