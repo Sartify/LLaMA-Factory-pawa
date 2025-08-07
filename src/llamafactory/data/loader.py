@@ -32,6 +32,7 @@ from .processor import (
     SupervisedDatasetProcessor,
     UnsupervisedDatasetProcessor,
 )
+from ..extras.customized_data_mappings import CUSTOMIZED_DATA_MAPPING
 
 
 if TYPE_CHECKING:
@@ -158,6 +159,18 @@ def _load_single_dataset(
     if data_args.max_samples is not None:  # truncate dataset
         max_samples = min(data_args.max_samples, len(dataset))
         dataset = dataset.select(range(max_samples))
+
+    # NOTE: beginening of customized dataset loading
+    if dataset_attr.dataset_name in CUSTOMIZED_DATA_MAPPING:
+        kwargs = {}
+        if not data_args.streaming:
+            kwargs = dict(
+                num_proc=data_args.preprocessing_num_workers,
+                load_from_cache_file=(not data_args.overwrite_cache) or (training_args.local_process_index != 0),
+                desc=f"Applying customized data mapping for {dataset_attr.dataset_name}",
+            )
+        dataset.map(CUSTOMIZED_DATA_MAPPING[dataset_attr.dataset_name], batched=False, **kwargs)
+    # NOTE: end of customized dataset loading
 
     return align_dataset(dataset, dataset_attr, data_args, training_args)
 

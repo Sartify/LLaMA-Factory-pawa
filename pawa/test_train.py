@@ -30,7 +30,7 @@ print(tokenizer_module["processor"].chat_template)
 tokenizer_module["processor"].save_pretrained("outputs/test_outputs")
 # for key in tokenizer_module:
 #     print()
-# for data in dataset_module["train_dataset"]:
-#     text = tokenizer.decode(data["input_ids"], skip_special_tokens=False)
-#     print(text)
-#     print(data)
+for data in dataset_module["train_dataset"]:
+    text = tokenizer.decode(data["input_ids"], skip_special_tokens=False)
+    print(text)
+    print(data)

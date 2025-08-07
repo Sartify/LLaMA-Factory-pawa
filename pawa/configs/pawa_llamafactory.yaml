@@ -16,10 +16,11 @@ dataset_dir: data
 dataset: xlam-function-calling-60k-sharegpt
 template: gemma3-pawa
 cutoff_len: 2048
-max_samples: 1e5
+# max_samples: 1e5
 overwrite_cache: true
-preprocessing_num_workers: 16
+# preprocessing_num_workers: 16 # incompatible with streaming
 dataloader_num_workers: 8
+streaming: true
 
 ### output
 output_dir: outputs/gemma3_test

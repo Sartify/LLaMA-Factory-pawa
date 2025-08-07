@@ -1,0 +1,16 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Python: test_train",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}/pawa/test_train.py",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}",
+      "args": [
+        "pawa/configs/pawa_llamafactory.yaml"
+      ]
+    }
+  ]
+}
