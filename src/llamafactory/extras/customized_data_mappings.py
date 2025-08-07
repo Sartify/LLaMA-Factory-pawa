@@ -1,5 +1,9 @@
 import json
 import numpy
+from ..extras import logging
+
+
+logger = logging.get_logger(__name__)
 
 
 class ShuffleTools:

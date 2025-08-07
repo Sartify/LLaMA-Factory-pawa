@@ -164,12 +164,16 @@ def _load_single_dataset(
     if dataset_attr.dataset_name in CUSTOMIZED_DATA_MAPPING:
         kwargs = {}
         if not data_args.streaming:
+            if not data_args.overwrite_cache:
+                logger.warning_rank0_once(
+                    "Applying custmoized data mapping may not be compatible with the cache, since it only apply once"
+                )
             kwargs = dict(
                 num_proc=data_args.preprocessing_num_workers,
                 load_from_cache_file=(not data_args.overwrite_cache) or (training_args.local_process_index != 0),
                 desc=f"Applying customized data mapping for {dataset_attr.dataset_name}",
             )
-        dataset.map(CUSTOMIZED_DATA_MAPPING[dataset_attr.dataset_name], batched=False, **kwargs)
+        dataset = dataset.map(CUSTOMIZED_DATA_MAPPING[dataset_attr.dataset_name], batched=False, **kwargs)
     # NOTE: end of customized dataset loading
 
     return align_dataset(dataset, dataset_attr, data_args, training_args)
