@@ -7,6 +7,12 @@
       "tools": "tools"
     }
   },
+  "aya-zulu-pretrained": {
+    "hf_hub_url": "sartifyllc/aya-zulu-pretrained",
+    "columns": {
+      "prompt": "text"
+    }
+  },
   "identity": {
     "file_name": "identity.json"
   },
