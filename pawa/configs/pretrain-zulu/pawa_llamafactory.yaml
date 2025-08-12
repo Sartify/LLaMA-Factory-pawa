@@ -8,6 +8,7 @@ do_train: true
 finetuning_type: full
 # lora_rank: 64
 # lora_target: all
+# lora_alpha:
 # lora_dropout: 0.0
 # flash_attn: auto
 
@@ -21,12 +22,13 @@ overwrite_cache: true
 # preprocessing_num_workers: 16 # incompatible with streaming
 dataloader_num_workers: 8
 streaming: true
+
 max_steps: 1787219
 packing: true
 
 ### output
 output_dir: outputs/pawa-zulu-pt
-logging_steps: 10
+logging_steps: 20
 save_steps: 500
 plot_loss: true
 overwrite_output_dir: true
@@ -40,13 +42,8 @@ learning_rate: 1.0e-4
 num_train_epochs: 2
 lr_scheduler_type: cosine
 max_grad_norm: 1.0
-warmup_ratio: 0.1
+warmup_ratio: 0.05
 bf16: true
 ddp_timeout: 180000000
-resume_from_checkpoint: null
-### eval
-# eval_dataset: alpaca_en_demo
-# val_size: 0.1
-# per_device_eval_batch_size: 1
-# eval_strategy: steps
-# eval_steps: 500
+resume_from_checkpoint: outputs/pawa-zulu-pt/checkpoint-3500
+#
