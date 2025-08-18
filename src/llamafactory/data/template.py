@@ -1985,7 +1985,7 @@ class PawaTemplate(Template):
         return encoded_messages
 
     def _get_jinja_template(self, tokenizer: "PreTrainedTokenizer") -> str:
-        with open("pawa/template.jinja", encoding="utf-8") as f:
+        with open("pawa/jinjas/gemma3-pawa-template.jinja", encoding="utf-8") as f:
             jinja_template = f.read()
         return jinja_template
 

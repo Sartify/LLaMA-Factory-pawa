@@ -772,6 +772,20 @@ register_model_group(
     template="gemma2",
 )
 
+# NOTE:  add gemma 270 m
+register_model_group(
+    models={
+        "Gemma-2-270M": {
+            DownloadSource.DEFAULT: "google/gemma-2-270m",
+        },
+        "Gemma-2-270M-Instruct": {
+            DownloadSource.DEFAULT: "google/gemma-2-270m-it",
+        },
+    },
+    template="gemma2",
+)
+
+# NOTE: end of customized code
 
 register_model_group(
     models={
