@@ -61,11 +61,18 @@ class CustomizedArguments:
             output_dir = os.path.join(self.auto_output_root, base_name)
 
             if self.output_dir:
-                logger.warning(
+                logger.warning_rank0(
                     "The `output_dir` argument is set, but `auto_output_dir` is True. "
                     f"The `output_dir` will be overridden from {self.output_dir} to {output_dir}."
                 )
             self.output_dir = output_dir
+
+            if self.run_name:
+                logger.warning_rank0(
+                    "The `run_name` argument is set, but `auto_output_dir` is True. "
+                    f"The `run_name` will be overridden to the new output directory name: {output_dir}."
+                )
+            self.run_name = output_dir
         else:
             if self.auto_output_root:
                 raise ValueError(
