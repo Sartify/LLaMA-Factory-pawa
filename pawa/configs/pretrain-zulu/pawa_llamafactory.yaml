@@ -31,7 +31,9 @@ streaming: false
 packing: true
 
 ### output
-output_dir: outputs/pawa-270m-zulu-it
+auto_output_dir: true
+auto_output_root: outputs/pawa-270m-zulu
+# output_dir: outputs/pawa-270m-zulu-it
 logging_steps: 20
 save_steps: 500
 plot_loss: true

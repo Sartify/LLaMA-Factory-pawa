@@ -20,6 +20,61 @@ from transformers import Seq2SeqTrainingArguments
 from transformers.training_args import _convert_str_dict
 
 from ..extras.misc import use_ray
+from ..extras.logging import get_logger
+
+from datetime import datetime
+import os
+
+
+logger = get_logger(__name__)
+
+
+# NOTE: start of customized arguments
+@dataclass
+class CustomizedArguments:
+    auto_output_dir: bool = field(
+        default=True,
+        metadata={
+            "help": "Whether to automatically set the output directory based on the model name."
+            " If set to False, the output directory will be set to the value of `output_dir`."
+        },
+    )
+    auto_output_root: str = field(
+        default="./auto_saves",
+        metadata={
+            "help": "The root directory to save the training results to when `auto_output_dir` is True."
+            " The final output directory will be `<auto_output_root>/<model_name>`."
+        },
+    )
+
+    @staticmethod
+    def __init_output_base_name():
+        now = datetime.now()
+        return now.strftime("%Y-%m-%d_%H-%M-%S")
+
+    def __post_init__(self):
+        if self.auto_output_dir:
+            if not self.auto_output_root:
+                raise ValueError("auto_output_root must be specified when auto_output_dir is True.")
+
+            base_name = self.__init_output_base_name()
+            output_dir = os.path.join(self.auto_output_root, base_name)
+
+            if self.output_dir:
+                logger.warning(
+                    "The `output_dir` argument is set, but `auto_output_dir` is True. "
+                    f"The `output_dir` will be overridden from {self.output_dir} to {output_dir}."
+                )
+            self.output_dir = output_dir
+        else:
+            if self.auto_output_root:
+                raise ValueError(
+                    "auto_output_root must not be specified when auto_output_dir is False. "
+                    "The `output_dir` will be set to the value of `output_dir`."
+                )
+
+
+# NOTE: end of customized arguments
 
 
 @dataclass
@@ -74,9 +129,10 @@ class RayArguments:
 
 
 @dataclass
-class TrainingArguments(RayArguments, Seq2SeqTrainingArguments):
+class TrainingArguments(RayArguments, Seq2SeqTrainingArguments, CustomizedArguments):
     r"""Arguments pertaining to the trainer."""
 
     def __post_init__(self):
         Seq2SeqTrainingArguments.__post_init__(self)
         RayArguments.__post_init__(self)
+        CustomizedArguments.__post_init__(self)

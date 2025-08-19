@@ -9,7 +9,7 @@
       "console": "integratedTerminal",
       "cwd": "${workspaceFolder}",
       "args": [
-        "pawa/configs/pawa_llamafactory.yaml"
+        "pawa/configs/pretrain-zulu/pawa_llamafactory.yaml"
       ]
     }
   ]
