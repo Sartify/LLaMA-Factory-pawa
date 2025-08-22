@@ -1,14 +1,17 @@
 ### model
 # model_name_or_path: google/gemma-3-4b-it
+#
 # model_name_or_path: google/gemma-3-1b-pt
-model_name_or_path: google/gemma-3-270m-it
+# model_name_or_path: google/gemma-3-270m-it
+model_name_or_path: google/gemma-3-270m
 trust_remote_code: true
 flash_attn: fa2
 
 ### method
 stage: pt
 do_train: true
-finetuning_type: full
+finetuning_type: freeze
+freeze_trainable_layers: 18
 # lora_rank: 64
 # lora_target: all
 # lora_alpha:
@@ -21,6 +24,7 @@ dataset: aya-zulu-pretrained
 template: gemma3-pawa
 cutoff_len: 1024
 # max_samples: 1e5
+#
 overwrite_cache: true
 preprocessing_num_workers: 32 # incompatible with streaming
 dataloader_num_workers: 8
@@ -32,7 +36,7 @@ packing: true
 
 ### output
 auto_output_dir: true
-auto_output_root: outputs/pawa-270m-zulu
+auto_output_root: outputs/pawa-270m-zulu-pt-freeze
 # output_dir: outputs/pawa-270m-zulu-it
 logging_steps: 20
 save_steps: 500
@@ -46,7 +50,8 @@ save_total_limit: 2
 per_device_train_batch_size: 12
 gradient_accumulation_steps: 8
 learning_rate: 1.0e-4
-num_train_epochs: 4
+num_train_epochs: 2
+# lr_scheduler_type: constant_with_warmup
 lr_scheduler_type: cosine
 max_grad_norm: 1.0
 warmup_ratio: 0.01

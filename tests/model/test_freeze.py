@@ -44,9 +44,9 @@ INFER_ARGS = {
 
 
 def test_freeze_train_all_modules():
-    model = load_train_model(freeze_trainable_layers=1, **TRAIN_ARGS)
+    model = load_train_model(freeze_trainable_layers=2, **TRAIN_ARGS)
     for name, param in model.named_parameters():
-        if name.startswith("model.layers.1."):
+        if name.startswith("model.layers.0.") or name.startswith("model.layers.1."):
             assert param.requires_grad is True
             assert param.dtype == torch.float32
         else:
@@ -70,3 +70,7 @@ def test_freeze_inference():
     for param in model.parameters():
         assert param.requires_grad is False
         assert param.dtype == torch.float16
+
+
+if __name__ == "__main__":
+    test_freeze_train_all_modules()

@@ -11,6 +11,24 @@
       "args": [
         "pawa/configs/pretrain-zulu/pawa_llamafactory.yaml"
       ]
+    },
+    {
+      "name": "TorchRun Training Debug",
+      "type": "python",
+      "request": "launch",
+      "module": "torch.distributed.run",
+      "args": [
+        "--nnodes",
+        "1",
+        "--nproc_per_node",
+        "1",
+        "${workspaceFolder}/tests/model/test_freeze.py"
+      ],
+      "console": "integratedTerminal",
+      "env": {
+        "WORLD_SIZE": "1"
+      },
+      "cwd": "${workspaceFolder}"
     }
   ]
 }

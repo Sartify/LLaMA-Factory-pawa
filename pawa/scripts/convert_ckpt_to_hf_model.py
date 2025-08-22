@@ -22,7 +22,7 @@ from transformers import (
 model_name = "google/gemma-3-270m"
 template_name = "gemma3-pawa"
 
-LLAMA_FACTORY_CHECKPOINT_DIR = "outputs/pawa-270m-zulu-pt.backup2/checkpoint-8000"
+LLAMA_FACTORY_CHECKPOINT_DIR = "outputs/pawa-270m-zulu-pt/2025-08-20_20-14-28/checkpoint-5992"
 TORCH_SAVE_CHECKPOINT_DIR = "outputs/torch_save_checkpoint.pth"
 OUTPUT_DIR = "outputs/test_output"
 
