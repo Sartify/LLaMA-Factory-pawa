@@ -39,8 +39,8 @@ class CustomizedArguments:
             " If set to False, the output directory will be set to the value of `output_dir`."
         },
     )
-    auto_output_root: str = field(
-        default="./auto_saves",
+    auto_output_root: str | None = field(
+        default=None,
         metadata={
             "help": "The root directory to save the training results to when `auto_output_dir` is True."
             " The final output directory will be `<auto_output_root>/<model_name>`."

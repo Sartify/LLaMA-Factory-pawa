@@ -22,7 +22,8 @@
         "1",
         "--nproc_per_node",
         "1",
-        "${workspaceFolder}/tests/model/test_freeze.py"
+        "--standalone",
+        "tests/model/test_freeze.py"
       ],
       "console": "integratedTerminal",
       "env": {

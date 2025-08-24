@@ -1,17 +1,16 @@
-from llamafactory.hparams import get_infer_args, get_ray_args, get_train_args, read_args, parser
-from llamafactory.train.sft import run_sft
-from llamafactory.data import get_dataset, get_template_and_fix_tokenizer
-from llamafactory.model import load_tokenizer
-from llamafactory.extras.customized_utils import fix_chat_template_for_processor
+from typing import Any
 
-from typing import Any, TYPE_CHECKING
-from transformers.models.gemma3.processing_gemma3 import Gemma3Processor
-from transformers.processing_utils import ProcessorMixin
+from llamafactory.data import get_dataset, get_template_and_fix_tokenizer
+from llamafactory.extras.customized_utils import fix_chat_template_for_processor
+from llamafactory.hparams import parser, read_args
+from llamafactory.model import load_tokenizer
+
 
 args = read_args()
 config = {"args": args, "callbacks": []}
 
 args = config.get("args")
+# ty: ignore[invalid-assignment]
 callbacks: list[Any] = config.get("callbacks")
 # model_args, data_args, training_args, finetuning_args, generating_args = get_train_args(args)
 model_args, data_args, training_args, finetuning_args, generating_args = parser._parse_train_args(args)

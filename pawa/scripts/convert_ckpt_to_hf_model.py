@@ -1,28 +1,26 @@
 import os
 from re import TEMPLATE
 
+import torch
+import torch.distributed.checkpoint as DCP
+from torch.distributed.checkpoint.format_utils import dcp_to_torch_save
+from transformers import (
+    AutoConfig,
+    AutoModelForAudioClassification,
+    AutoModelForCausalLM,
+    AutoProcessor,
+    AutoTokenizer,
+)
 from transformers.tokenization_utils import PreTrainedTokenizer
 from transformers.tokenization_utils_fast import PreTrainedTokenizerFast
 
-
 from llamafactory.data.template import TEMPLATES
 
-import torch
-import torch.distributed.checkpoint as DCP
-from torch.distributed.checkpoint.format_utils import dcp_to_torch_save, torch_save_to_dcp
-
-from transformers import (
-    AutoModelForAudioClassification,
-    AutoModelForCausalLM,
-    AutoConfig,
-    AutoTokenizer,
-    AutoProcessor,
-)
 
 model_name = "google/gemma-3-270m"
 template_name = "gemma3-pawa"
 
-LLAMA_FACTORY_CHECKPOINT_DIR = "outputs/pawa-270m-zulu-pt/2025-08-20_20-14-28/checkpoint-5992"
+LLAMA_FACTORY_CHECKPOINT_DIR = "outputs/pawa-270m-zulu-pt-freeze/2025-08-21_22-15-49/checkpoint-5992"
 TORCH_SAVE_CHECKPOINT_DIR = "outputs/torch_save_checkpoint.pth"
 OUTPUT_DIR = "outputs/test_output"
 
