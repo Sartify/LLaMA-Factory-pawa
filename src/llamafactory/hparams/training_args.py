@@ -46,6 +46,10 @@ class CustomizedArguments:
             " The final output directory will be `<auto_output_root>/<model_name>`."
         },
     )
+    eval_pawa_harness: bool = field(
+        default=False,
+        metadata={"help": "Whether to evaluate the model on the PAWA harness at each save step."},
+    )
 
     @staticmethod
     def __init_output_base_name():

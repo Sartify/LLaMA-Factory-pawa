@@ -9,10 +9,11 @@ from llamafactory.model import load_tokenizer
 args = read_args()
 config = {"args": args, "callbacks": []}
 
+
 args = config.get("args")
 # ty: ignore[invalid-assignment]
-callbacks: list[Any] = config.get("callbacks")
 # model_args, data_args, training_args, finetuning_args, generating_args = get_train_args(args)
+callbacks: list[Any] = config.get("callbacks")
 model_args, data_args, training_args, finetuning_args, generating_args = parser._parse_train_args(args)
 
 # run_sft(model_args, data_args, training_args, finetuning_args, generating_args, callbacks)
