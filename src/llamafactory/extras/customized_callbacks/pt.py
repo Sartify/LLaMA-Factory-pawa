@@ -16,8 +16,12 @@ sys.path.append(os.getcwd())
 class OnSaveEvaluationCallback(TrainerCallback):
     """A callback that performs evaluation when the model is saved."""
 
-    def __init__(self, base_model_name: str):
+    def __init__(self, base_model_name: str | None, eval_batch_size: int = 8):
+        super().__init__()
+        if base_model_name is None:
+            raise ValueError("base_model_name must be specified when using OnSaveEvaluationCallback.")
         self.base_model_name = base_model_name
+        self.eval_batch_size = eval_batch_size
 
     def on_save(self, args: TrainingArguments, state: TrainerState, control: TrainerControl, **kwargs):
         """Event called after a checkpoint save."""
@@ -37,6 +41,7 @@ class OnSaveEvaluationCallback(TrainerCallback):
 
             convert_output_dir = os.path.abspath(os.path.join(cache_dir, "converted_model"))
             torch_save_checkpoint_dir = os.path.abspath(os.path.join(cache_dir, "torch_save_checkpoint.pth"))
+            result_json = os.path.join(evauluation_working_dir, "results.json")
             os.makedirs(evauluation_working_dir, exist_ok=True)
             os.makedirs(cache_dir, exist_ok=True)
             os.makedirs(convert_output_dir, exist_ok=True)
@@ -52,10 +57,20 @@ class OnSaveEvaluationCallback(TrainerCallback):
                 f"--template_name gemma3-pawa"
             )
             logger.info_rank0(f"Evaluating checkpoint {checkpoint_dir} in {evauluation_working_dir}")
-            # delete cache
-            os.system(f"rm -rf {cache_dir}")
 
             logger.info_rank0(f"Evaluating model in {convert_output_dir}")
+
+            os.system(
+                f"CUDA_VISIBLE_DEVICES=0,1 python -m lm_eval --model hf "
+                f"--model_args pretrained={convert_output_dir},device_map=auto "
+                f"--tasks afrimmlu_direct_zul_prompt_1,afrimmlu_translate_zul_prompt_1 "
+                f"--batch_size {self.eval_batch_size} "
+                f"--output_path {result_json} "
+            )
+
+            # delete cache
+            os.system(f"rm -rf {cache_dir}")
+            logger.info_rank0(f"Evaluation results are saved in {result_json}")
 
     def parse_checkpoint_dir(self, output_dir: str) -> int:
         """checkpoint-14000"""
