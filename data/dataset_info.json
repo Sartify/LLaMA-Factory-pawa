@@ -7,6 +7,14 @@
       "tools": "tools"
     }
   },
+  "fineweb-2-zul": {
+    "hf_hub_url": "HuggingFaceFW/fineweb-2",
+    "subset": "zul_Latn",
+    "split": "train",
+    "columns": {
+      "prompt": "text"
+    }
+  },
   "aya-zulu-pretrained": {
     "hf_hub_url": "sartifyllc/aya-zulu-pretrained",
     "columns": {

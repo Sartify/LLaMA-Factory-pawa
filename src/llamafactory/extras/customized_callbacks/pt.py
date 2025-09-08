@@ -72,7 +72,8 @@ class OnSaveEvaluationCallback(TrainerCallback):
             os.system(f"rm -rf {cache_dir}")
             logger.info_rank0(f"Evaluation results are saved in {result_json}")
 
-    def parse_checkpoint_dir(self, output_dir: str) -> int:
+    @staticmethod
+    def parse_checkpoint_dir(output_dir: str) -> int:
         """checkpoint-14000"""
         candidates = os.listdir(output_dir)
         pattern = re.compile(r"^checkpoint-(\d+)$")

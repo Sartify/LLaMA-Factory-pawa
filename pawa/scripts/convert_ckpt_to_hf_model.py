@@ -18,10 +18,11 @@ from llamafactory.data.template import TEMPLATES
 from argparse import ArgumentParser
 
 
-MODEL_NAME = "google/gemma-3-270m"
+# MODEL_NAME = "google/gemma-3-270m"
+MODEL_NAME = "google/gemma-3-1b-pt"
 TEMPLATE_NAME = "gemma3-pawa"
 
-LLAMA_FACTORY_CHECKPOINT_DIR = "outputs/pawa-270m-zulu-it-freeze/2025-08-24_01-37-20/checkpoint-11984"
+LLAMA_FACTORY_CHECKPOINT_DIR = "outputs/pawa-1b-zulu-pt-freeze/2025-08-28_01-16-41/checkpoint-15000"
 TORCH_SAVE_CHECKPOINT_DIR = "outputs/torch_save_checkpoint.pth"
 OUTPUT_DIR = "outputs/test_output"
 
