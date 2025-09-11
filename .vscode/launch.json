@@ -35,18 +35,23 @@
       "name": "Acc Training Debug",
       "type": "python",
       "request": "launch",
-      "module": "torch.distributed.run",
+      "module": "accelerate.commands.launch",
       "args": [
-        "--nnodes",
+        "--config_file",
+        "pawa/configs/pretrain-zulu/acc.yaml",
+        "--main_process_port",
+        "29501",
+        "--num_processes",
         "1",
-        "--nproc_per_node",
+        "--num_machines",
         "1",
-        "--standalone",
-        "tests/model/test_freeze.py"
+        "src/train.py",
+        "pawa/configs/pretrain-zulu/pawa_llamafactory-debug.yaml"
       ],
       "console": "integratedTerminal",
       "env": {
-        "WORLD_SIZE": "1"
+        "WANDB_PROJECT": "llamafactory-debug",
+        "CUDA_VISIBLE_DEVICES": "1"
       },
       "cwd": "${workspaceFolder}"
     }

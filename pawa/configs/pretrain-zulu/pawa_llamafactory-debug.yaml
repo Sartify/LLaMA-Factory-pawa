@@ -20,15 +20,17 @@ freeze_trainable_layers: 18
 
 ### dataset
 dataset_dir: data
-dataset: aya-zulu-pretrained,fineweb-2-zul
+dataset: aya-zulu-pretrained
 template: gemma3-pawa
 cutoff_len: 1024
-# max_samples: 1e5
+max_samples: 10
 #
 overwrite_cache: true
 preprocessing_num_workers: 32 # incompatible with streaming
 dataloader_num_workers: 8
 streaming: false
+
+eval_pawa_harness: true
 
 # max_steps: 1787219
 # max_steps: 148935 # 1 epoch
@@ -36,16 +38,16 @@ packing: true
 
 ### output
 auto_output_dir: true
-auto_output_root: outputs/pawa-270m-zulu-pt-freeze
-# auto_output_root: outputs/pawa-270m-zulu-it-freeze
+# auto_output_root: outputs/pawa-270m-zulu-pt-freeze
+auto_output_root: outputs/pawa-270m-zulu-it-freeze
 # output_dir: outputs/pawa-270m-zulu-it-freeze
 logging_steps: 20
-save_steps: 500
+save_steps: 2
 plot_loss: true
 overwrite_output_dir: true
 save_only_model: false
 report_to: wandb # choices: [none, wandb, tensorboard, swanlab, mlflow]
-save_total_limit: 2
+save_total_limit: 1
 
 ### train
 per_device_train_batch_size: 12

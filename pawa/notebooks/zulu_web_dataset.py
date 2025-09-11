@@ -19,7 +19,7 @@ def _():
 
 @app.cell
 def _(mo):
-    mo.md(r"""## Zulu dataset Analysis """)
+    mo.md(r"""## Zulu dataset Analysis""")
     return
 
 
@@ -35,7 +35,14 @@ def _(test_dataset, train_dataset):
 
 @app.cell
 def _(mo):
-    mo.md(r"""## Zulu dataset figure """)
+    mo.md(
+        r"""
+    ## Zulu dataset figure
+    $$
+    \alpha + \beta
+    $$
+    """
+    )
     return
 
 
