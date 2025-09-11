@@ -48,8 +48,8 @@ def main(args):
     else:
         template.fix_jinja_template(processor.tokenizer)
 
-    model.save_pretrained(OUTPUT_DIR, max_shard_size="2GB")
-    processor.save_pretrained(OUTPUT_DIR)
+    model.save_pretrained(args.output_dir, max_shard_size="2GB")
+    processor.save_pretrained(args.output_dir)
 
 
 if __name__ == "__main__":

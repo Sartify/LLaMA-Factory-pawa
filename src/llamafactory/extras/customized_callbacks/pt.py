@@ -6,6 +6,7 @@ import sys
 import torch
 import gc
 from llamafactory.extras.logging import get_logger
+import json
 
 logger = get_logger(__name__)
 
@@ -25,12 +26,17 @@ class OnSaveEvaluationCallback(TrainerCallback):
 
     def on_save(self, args: TrainingArguments, state: TrainerState, control: TrainerControl, **kwargs):
         """Event called after a checkpoint save."""
+
+        logger.info("Releasing GPU memory before evaluation...")
+        torch.cuda.empty_cache()
+        gc.collect()
+
         if state.is_local_process_zero:
             print("Saving model and clearing GPU memory...")
             gc.collect()
             torch.cuda.empty_cache()
 
-        if state.global_step == 0:
+        if state.is_local_process_zero:
             args.output_dir
             steps, checkpoint_dir = self.parse_checkpoint_dir(args.output_dir)
 
@@ -41,7 +47,7 @@ class OnSaveEvaluationCallback(TrainerCallback):
 
             convert_output_dir = os.path.abspath(os.path.join(cache_dir, "converted_model"))
             torch_save_checkpoint_dir = os.path.abspath(os.path.join(cache_dir, "torch_save_checkpoint.pth"))
-            result_json = os.path.join(evauluation_working_dir, "results.json")
+
             os.makedirs(evauluation_working_dir, exist_ok=True)
             os.makedirs(cache_dir, exist_ok=True)
             os.makedirs(convert_output_dir, exist_ok=True)
@@ -60,17 +66,47 @@ class OnSaveEvaluationCallback(TrainerCallback):
 
             logger.info_rank0(f"Evaluating model in {convert_output_dir}")
 
-            os.system(
+            ret = os.system(
                 f"CUDA_VISIBLE_DEVICES=0,1 python -m lm_eval --model hf "
                 f"--model_args pretrained={convert_output_dir},device_map=auto "
                 f"--tasks afrimmlu_direct_zul_prompt_1,afrimmlu_translate_zul_prompt_1 "
                 f"--batch_size {self.eval_batch_size} "
-                f"--output_path {result_json} "
+                f"--output_path {os.path.join(evauluation_working_dir, 'results.json')} "
             )
+            if ret != 0:
+                raise RuntimeError("Evaluation failed.")
 
             # delete cache
             os.system(f"rm -rf {cache_dir}")
+
+            # find result json
+            result_json = self.find_ressult_json(evauluation_working_dir)
+
+            with open(os.path.join(evauluation_working_dir, result_json)) as f:
+                result = json.load(f)
+                self.log_eval_results(self, kwargs["trainer"], result)
+
             logger.info_rank0(f"Evaluation results are saved in {result_json}")
+
+    @staticmethod
+    def log_eval_results(self, trainer, result: dict):
+        trainer.log(
+            dict(
+                afrimmlu_direct_zul_prompt_1_accuracy=result["afrimmlu_direct_zul_prompt_1"]["accuracy"],
+                afrimmlu_translate_zul_prompt_1_accuracy=result["afrimmlu_translate_zul_prompt_1"]["accuracy"],
+            )
+        )
+
+    @staticmethod
+    def find_ressult_json(evaluation_working_dir: str) -> str:
+        candidates = os.listdir(evaluation_working_dir)
+        pattern = re.compile(r"^results_.*\.json$")
+        for candidate in candidates:
+            match = pattern.match(candidate)
+            if match:
+                return os.path.join(evaluation_working_dir, candidate)
+
+        raise ValueError(f"No results_*.json found in {evaluation_working_dir}")
 
     @staticmethod
     def parse_checkpoint_dir(output_dir: str) -> int:
