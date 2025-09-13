@@ -27,6 +27,8 @@ class OnSaveEvaluationCallback(TrainerCallback):
     def on_save(self, args: TrainingArguments, state: TrainerState, control: TrainerControl, **kwargs):
         """Event called after a checkpoint save."""
 
+        assert args.eval_pawa_harness, "eval_pawa_harness must be True when using OnSaveEvaluationCallback."
+
         logger.info("Releasing GPU memory before evaluation...")
         torch.cuda.empty_cache()
         gc.collect()
@@ -84,16 +86,20 @@ class OnSaveEvaluationCallback(TrainerCallback):
 
             with open(os.path.join(evauluation_working_dir, result_json)) as f:
                 result = json.load(f)
-                self.log_eval_results(self, kwargs["trainer"], result)
+                self.log_eval_results_wandb(self, result)
 
             logger.info_rank0(f"Evaluation results are saved in {result_json}")
 
     @staticmethod
-    def log_eval_results(self, trainer, result: dict):
-        trainer.log(
+    def log_eval_results_wandb(self, result: dict):
+        import wandb
+
+        wandb.log(
             dict(
-                afrimmlu_direct_zul_prompt_1_accuracy=result["afrimmlu_direct_zul_prompt_1"]["accuracy"],
-                afrimmlu_translate_zul_prompt_1_accuracy=result["afrimmlu_translate_zul_prompt_1"]["accuracy"],
+                afrimmlu_direct_zul_prompt_1_accuracy=result["results"]["afrimmlu_direct_zul_prompt_1"]["acc,none"],
+                afrimmlu_translate_zul_prompt_1_accuracy=result["results"]["afrimmlu_translate_zul_prompt_1"][
+                    "acc,none"
+                ],
             )
         )
 
