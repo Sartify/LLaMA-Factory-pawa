@@ -20,7 +20,8 @@ freeze_trainable_layers: 18
 
 ### dataset
 dataset_dir: data
-dataset: aya-zulu-pretrained,fineweb-2-zul
+# dataset: aya-zulu-pretrained,fineweb-2-zul
+dataset: swahili_translation
 template: gemma3-pawa
 cutoff_len: 1024
 # max_samples: 1e5
@@ -37,6 +38,7 @@ packing: true
 ### output
 auto_output_dir: true
 auto_output_root: outputs/pawa-270m-zulu-pt-freeze
+eval_pawa_harness: true
 # auto_output_root: outputs/pawa-270m-zulu-it-freeze
 # output_dir: outputs/pawa-270m-zulu-it-freeze
 logging_steps: 20

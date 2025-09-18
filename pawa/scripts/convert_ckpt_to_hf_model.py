@@ -22,7 +22,7 @@ MODEL_NAME = "google/gemma-3-270m"
 # MODEL_NAME = "google/gemma-3-1b-pt"
 TEMPLATE_NAME = "gemma3-pawa"
 
-LLAMA_FACTORY_CHECKPOINT_DIR = "outputs/pawa-270m-zulu-pt-freeze/2025-09-09_10-11-45/checkpoint-15728"
+LLAMA_FACTORY_CHECKPOINT_DIR = "outputs/pawa-270m-zulu-pt-freeze/2025-09-11_14-07-15/checkpoint-15728"
 TORCH_SAVE_CHECKPOINT_DIR = "outputs/torch_save_checkpoint.pth"
 OUTPUT_DIR = "outputs/test_output"
 

@@ -1,4 +1,11 @@
 {
+  "swahili_translation": {
+    "hf_hub_url": "sartifyllc/swahili-pretrained-dataset",
+    "split": "swahili_translation",
+    "columns": {
+      "prompt": "text"
+    }
+  },
   "xlam-function-calling-60k-sharegpt": {
     "hf_hub_url": "Beryex/xlam-function-calling-60k-sharegpt",
     "formatting": "sharegpt",

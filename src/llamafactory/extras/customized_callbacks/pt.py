@@ -33,6 +33,7 @@ class OnSaveEvaluationCallback(TrainerCallback):
         torch.cuda.empty_cache()
         gc.collect()
 
+        # NOTE: to release GPU memory before evaluation, since we are using different process to do evaluation
         if state.is_local_process_zero:
             print("Saving model and clearing GPU memory...")
             gc.collect()
@@ -68,9 +69,11 @@ class OnSaveEvaluationCallback(TrainerCallback):
 
             logger.info_rank0(f"Evaluating model in {convert_output_dir}")
 
+            cuda_visible_devices = os.environ.get("CUDA_VISIBLE_DEVICES", "0")
             ret = os.system(
-                f"CUDA_VISIBLE_DEVICES=0,1 python -m lm_eval --model hf "
+                f"CUDA_VISIBLE_DEVICES={cuda_visible_devices} python -m lm_eval --model hf "  # TODO: maybe we need support for dynamic cuda sessions
                 f"--model_args pretrained={convert_output_dir},device_map=auto "
+                # f"--tasks afrimmlu_direct_zul_prompt_1,afrimmlu_translate_zul_prompt_1 "
                 f"--tasks afrimmlu_direct_zul_prompt_1,afrimmlu_translate_zul_prompt_1 "
                 f"--batch_size {self.eval_batch_size} "
                 f"--output_path {os.path.join(evauluation_working_dir, 'results.json')} "

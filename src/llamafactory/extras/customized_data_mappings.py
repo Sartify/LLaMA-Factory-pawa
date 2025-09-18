@@ -31,6 +31,16 @@ def build_xlam_function_calling_data_mapping():
     return mapping
 
 
+def build_swahili_translation_data_mapping():
+    def mapping(example):
+        # Swahili translation task
+        example["text"] = "prompt:" + example["text"]
+        return example
+
+    return mapping
+
+
 CUSTOMIZED_DATA_MAPPING = {
-    "Beryex/xlam-function-calling-60k-sharegpt": build_xlam_function_calling_data_mapping(),
+    "xlam-function-calling-60k-sharegpt": build_xlam_function_calling_data_mapping(),
+    "swahili_translation": build_swahili_translation_data_mapping(),
 }

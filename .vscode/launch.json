@@ -51,7 +51,7 @@
       "console": "integratedTerminal",
       "env": {
         "WANDB_PROJECT": "llamafactory-debug",
-        "CUDA_VISIBLE_DEVICES": "1"
+        "CUDA_VISIBLE_DEVICES": "0"
       },
       "cwd": "${workspaceFolder}"
     }

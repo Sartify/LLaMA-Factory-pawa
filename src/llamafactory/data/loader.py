@@ -49,8 +49,10 @@ if TYPE_CHECKING:
 logger = logging.get_logger(__name__)
 
 
+# add _dataset_name to support customized data mapping
 def _load_single_dataset(
     dataset_attr: "DatasetAttr",
+    _dataset_name: str,
     model_args: "ModelArguments",
     data_args: "DataArguments",
     training_args: "Seq2SeqTrainingArguments",
@@ -161,7 +163,7 @@ def _load_single_dataset(
         dataset = dataset.select(range(max_samples))
 
     # NOTE: beginening of customized dataset loading
-    if dataset_attr.dataset_name in CUSTOMIZED_DATA_MAPPING:
+    if _dataset_name in CUSTOMIZED_DATA_MAPPING:
         kwargs = {}
         if not data_args.streaming:
             if not data_args.overwrite_cache:
@@ -173,7 +175,7 @@ def _load_single_dataset(
                 load_from_cache_file=(not data_args.overwrite_cache) or (training_args.local_process_index != 0),
                 desc=f"Applying customized data mapping for {dataset_attr.dataset_name}",
             )
-        dataset = dataset.map(CUSTOMIZED_DATA_MAPPING[dataset_attr.dataset_name], batched=False, **kwargs)
+        dataset = dataset.map(CUSTOMIZED_DATA_MAPPING[_dataset_name], batched=False, **kwargs)
     # NOTE: end of customized dataset loading
 
     return align_dataset(dataset, dataset_attr, data_args, training_args)
@@ -196,7 +198,8 @@ def _get_merged_dataset(
         if (stage == "rm" and dataset_attr.ranking is False) or (stage != "rm" and dataset_attr.ranking is True):
             raise ValueError("The dataset is not applicable in the current training stage.")
 
-        datasets[dataset_name] = _load_single_dataset(dataset_attr, model_args, data_args, training_args)
+        # NOTE: add dataset_name to the dataset_name for customized processing
+        datasets[dataset_name] = _load_single_dataset(dataset_attr, dataset_name, model_args, data_args, training_args)
 
     if return_dict:
         return datasets
