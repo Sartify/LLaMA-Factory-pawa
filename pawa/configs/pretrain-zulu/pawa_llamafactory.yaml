@@ -37,12 +37,12 @@ packing: true
 
 ### output
 auto_output_dir: true
-auto_output_root: outputs/pawa-270m-zulu-pt-freeze
+auto_output_root: outputs/pawa-270m-sw-trans-it-freeze
 eval_pawa_harness: true
 # auto_output_root: outputs/pawa-270m-zulu-it-freeze
 # output_dir: outputs/pawa-270m-zulu-it-freeze
 logging_steps: 20
-save_steps: 500
+save_steps: 800
 plot_loss: true
 overwrite_output_dir: true
 save_only_model: false

@@ -1,6 +1,7 @@
 import json
 import numpy
-from ..extras import logging
+from ...extras import logging
+from .register import PT_REGISTRY
 
 
 logger = logging.get_logger(__name__)
@@ -34,13 +35,15 @@ def build_xlam_function_calling_data_mapping():
 def build_swahili_translation_data_mapping():
     def mapping(example):
         # Swahili translation task
-        example["text"] = "prompt:" + example["text"]
+        example["text"] = "Translate to swahili: " + example["text"]
         return example
 
     return mapping
 
 
-CUSTOMIZED_DATA_MAPPING = {
-    "xlam-function-calling-60k-sharegpt": build_xlam_function_calling_data_mapping(),
-    "swahili_translation": build_swahili_translation_data_mapping(),
-}
+PT_REGISTRY.update(
+    {
+        "xlam-function-calling-60k-sharegpt": build_xlam_function_calling_data_mapping(),
+        "swahili_translation": build_swahili_translation_data_mapping(),
+    }
+)

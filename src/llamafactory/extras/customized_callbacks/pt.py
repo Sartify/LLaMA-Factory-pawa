@@ -71,12 +71,15 @@ class OnSaveEvaluationCallback(TrainerCallback):
 
             cuda_visible_devices = os.environ.get("CUDA_VISIBLE_DEVICES", "0")
             ret = os.system(
-                f"CUDA_VISIBLE_DEVICES={cuda_visible_devices} python -m lm_eval --model hf "  # TODO: maybe we need support for dynamic cuda sessions
+                f"CUDA_VISIBLE_DEVICES={cuda_visible_devices} accelerate "
+                f"launch --main_process_port 29501 -m lm_eval --model hf "  # TODO: maybe we need support for dynamic cuda sessions
                 f"--model_args pretrained={convert_output_dir},device_map=auto "
                 # f"--tasks afrimmlu_direct_zul_prompt_1,afrimmlu_translate_zul_prompt_1 "
-                f"--tasks afrimmlu_direct_zul_prompt_1,afrimmlu_translate_zul_prompt_1 "
+                f"--tasks en_sw_sentence_pairs "
                 f"--batch_size {self.eval_batch_size} "
                 f"--output_path {os.path.join(evauluation_working_dir, 'results.json')} "
+                "--limit "
+                "1000"  # WARN: limit 1000 for quick test, remove it for full evaluation
             )
             if ret != 0:
                 raise RuntimeError("Evaluation failed.")
@@ -98,11 +101,14 @@ class OnSaveEvaluationCallback(TrainerCallback):
         import wandb
 
         wandb.log(
+            # dict(
+            #     afrimmlu_direct_zul_prompt_1_accuracy=result["results"]["afrimmlu_direct_zul_prompt_1"]["acc,none"],
+            #     afrimmlu_translate_zul_prompt_1_accuracy=result["results"]["afrimmlu_translate_zul_prompt_1"][
+            #         "acc,none"
+            #     ],
+            # )
             dict(
-                afrimmlu_direct_zul_prompt_1_accuracy=result["results"]["afrimmlu_direct_zul_prompt_1"]["acc,none"],
-                afrimmlu_translate_zul_prompt_1_accuracy=result["results"]["afrimmlu_translate_zul_prompt_1"][
-                    "acc,none"
-                ],
+                en_sw_bleu=result["results"]["en_sw_sentence_pairs"]["bleu,none"],
             )
         )
 

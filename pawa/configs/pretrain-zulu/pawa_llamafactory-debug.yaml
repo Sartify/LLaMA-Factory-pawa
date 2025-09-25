@@ -40,7 +40,7 @@ packing: true
 ### output
 auto_output_dir: true
 # auto_output_root: outputs/pawa-270m-zulu-pt-freeze
-auto_output_root: outputs/pawa-270m-zulu-debug
+auto_output_root: outputs/pawa-270m-sw-debug
 # output_dir: outputs/pawa-270m-zulu-it-freeze
 logging_steps: 20
 save_steps: 1

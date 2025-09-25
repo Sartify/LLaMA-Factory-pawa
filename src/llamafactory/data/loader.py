@@ -32,7 +32,6 @@ from .processor import (
     SupervisedDatasetProcessor,
     UnsupervisedDatasetProcessor,
 )
-from ..extras.customized_data_mappings import CUSTOMIZED_DATA_MAPPING
 
 
 if TYPE_CHECKING:
@@ -56,6 +55,7 @@ def _load_single_dataset(
     model_args: "ModelArguments",
     data_args: "DataArguments",
     training_args: "Seq2SeqTrainingArguments",
+    stage: Literal["pt", "sft", "rm", "ppo", "kto"],
 ) -> Union["Dataset", "IterableDataset"]:
     r"""Load a single dataset and aligns it to the standard format."""
     logger.info_rank0(f"Loading dataset {dataset_attr}...")
@@ -163,6 +163,9 @@ def _load_single_dataset(
         dataset = dataset.select(range(max_samples))
 
     # NOTE: beginening of customized dataset loading
+    from ..extras.customized_data_mappings.registry import ALL_REGISTRYS
+
+    CUSTOMIZED_DATA_MAPPING = ALL_REGISTRYS.get(stage, {})
     if _dataset_name in CUSTOMIZED_DATA_MAPPING:
         kwargs = {}
         if not data_args.streaming:
@@ -199,7 +202,9 @@ def _get_merged_dataset(
             raise ValueError("The dataset is not applicable in the current training stage.")
 
         # NOTE: add dataset_name to the dataset_name for customized processing
-        datasets[dataset_name] = _load_single_dataset(dataset_attr, dataset_name, model_args, data_args, training_args)
+        datasets[dataset_name] = _load_single_dataset(
+            dataset_attr, dataset_name, model_args, data_args, training_args, stage
+        )
 
     if return_dict:
         return datasets
