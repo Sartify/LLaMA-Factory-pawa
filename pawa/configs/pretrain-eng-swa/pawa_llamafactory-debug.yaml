@@ -21,7 +21,7 @@ freeze_trainable_layers: 18
 ### dataset
 dataset_dir: data
 # dataset: aya-zulu-pretrained
-dataset: sartifyllc/swahili-english
+dataset: swahili_english
 template: gemma3-pawa
 cutoff_len: 1024
 max_samples: 1000

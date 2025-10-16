@@ -9,7 +9,7 @@
       "console": "integratedTerminal",
       "cwd": "${workspaceFolder}",
       "args": [
-        "pawa/configs/pretrain-zulu/pawa_llamafactory.yaml"
+        "pawa/configs/pretrain-eng-swa/pawa_llamafactory.yaml"
       ]
     },
     {
@@ -38,7 +38,7 @@
       "module": "accelerate.commands.launch",
       "args": [
         "--config_file",
-        "pawa/configs/pretrain-zulu/acc.yaml",
+        "pawa/configs/pretrain-eng-swa/acc.yaml",
         "--main_process_port",
         "29502",
         "--num_processes",
@@ -46,7 +46,7 @@
         "--num_machines",
         "1",
         "src/train.py",
-        "pawa/configs/pretrain-zulu/pawa_llamafactory-debug.yaml"
+        "pawa/configs/pretrain-eng-swa/pawa_llamafactory-debug.yaml"
       ],
       "console": "integratedTerminal",
       "env": {

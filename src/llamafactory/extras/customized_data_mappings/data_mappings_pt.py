@@ -1,7 +1,6 @@
 import json
 import numpy
 from .. import logging
-from .registry import PT_REGISTRY
 
 
 logger = logging.get_logger(__name__)
@@ -41,11 +40,3 @@ def build_swahili_english():
         return example
 
     return mapping
-
-
-PT_REGISTRY.update(
-    {
-        "xlam-function-calling-60k-sharegpt": build_xlam_function_calling_data_mapping(),
-        "swahili_english": build_swahili_english(),
-    }
-)
