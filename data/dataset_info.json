@@ -6,6 +6,13 @@
       "prompt": "text"
     }
   },
+  "swahili_english": {
+    "hf_hub_url": "sartifyllc/swahili-english",
+    "split": "train",
+    "columns": {
+      "prompt": "text"
+    }
+  },
   "xlam-function-calling-60k-sharegpt": {
     "hf_hub_url": "Beryex/xlam-function-calling-60k-sharegpt",
     "formatting": "sharegpt",

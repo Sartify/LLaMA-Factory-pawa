@@ -48,6 +48,11 @@ def run_pt(
     model = load_model(tokenizer, model_args, finetuning_args, training_args.do_train)
     data_collator = DataCollatorForLanguageModeling(tokenizer=tokenizer, mlm=False)
 
+    # NOTE: begin replace the tokenizer in processor
+    if tokenizer_module.get("processor", None) is not None and hasattr(tokenizer_module["processor"], "tokenizer"):
+        tokenizer_module["processor"].tokenizer = tokenizer
+    # NOTE: end replace the tokenizer in processor
+
     # NOTE: begin add custom callbacks
     if training_args.eval_pawa_harness:
         callbacks.append(OnSaveEvaluationCallback(model_args.model_name_or_path))

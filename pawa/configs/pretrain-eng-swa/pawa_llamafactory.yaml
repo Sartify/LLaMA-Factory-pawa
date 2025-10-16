@@ -5,13 +5,14 @@
 model_name_or_path: google/gemma-3-270m-it
 # model_name_or_path: google/gemma-3-270m
 trust_remote_code: true
-# flash_attn: fa2
+flash_attn: fa2
 
 ### method
 stage: pt
 do_train: true
 finetuning_type: freeze
 freeze_trainable_layers: 18
+freeze_extra_modules: "embed_tokens,lm_head"
 # lora_rank: 64
 # lora_target: all
 # lora_alpha:
@@ -20,18 +21,16 @@ freeze_trainable_layers: 18
 
 ### dataset
 dataset_dir: data
-# dataset: aya-zulu-pretrained
-dataset: sartifyllc/swahili-english
+# dataset: aya-zulu-pretrained,fineweb-2-zul
+dataset: swahili_english
 template: gemma3-pawa
 cutoff_len: 1024
-max_samples: 1000
+# max_samples: 1e5
 #
 overwrite_cache: true
 preprocessing_num_workers: 32 # incompatible with streaming
 dataloader_num_workers: 8
 streaming: false
-
-eval_pawa_harness: false
 
 # max_steps: 1787219
 # max_steps: 148935 # 1 epoch
@@ -39,23 +38,24 @@ packing: true
 
 ### output
 auto_output_dir: true
-# auto_output_root: outputs/pawa-270m-zulu-pt-freeze
-auto_output_root: outputs/pawa-270m-sw-debug
+auto_output_root: outputs/pawa-270m-sw-trans-it-freeze
+eval_pawa_harness: true
+# auto_output_root: outputs/pawa-270m-zulu-it-freeze
 # output_dir: outputs/pawa-270m-zulu-it-freeze
 logging_steps: 20
-save_steps: 1
+save_steps: 800
 plot_loss: true
 overwrite_output_dir: true
 save_only_model: false
 report_to: wandb # choices: [none, wandb, tensorboard, swanlab, mlflow]
-save_total_limit: 1
+save_total_limit: 2
 
 ### train
-per_device_train_batch_size: 2
+per_device_train_batch_size: 12
 # per_device_train_batch_size: 16
 gradient_accumulation_steps: 8
 learning_rate: 1.0e-4
-num_train_epochs: 50
+num_train_epochs: 2
 # lr_scheduler_type: constant_with_warmup
 lr_scheduler_type: cosine
 max_grad_norm: 1.0
