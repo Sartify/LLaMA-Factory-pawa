@@ -7,10 +7,7 @@
       "request": "launch",
       "program": "${workspaceFolder}/pawa/test_train.py",
       "console": "integratedTerminal",
-      "cwd": "${workspaceFolder}",
-      "args": [
-        "pawa/configs/pretrain-eng-swa/pawa_llamafactory.yaml"
-      ]
+      "cwd": "${workspaceFolder}"
     },
     {
       "name": "TorchRun Training Debug",

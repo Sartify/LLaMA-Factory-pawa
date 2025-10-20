@@ -275,6 +275,10 @@ def align_dataset(
             desc="Converting format of dataset",
         )
 
+    if data_args.disable_caching:
+        kwargs["load_from_cache_file"] = False
+        kwargs["num_proc"] = None
+
     dataset_converter = get_dataset_converter(dataset_attr.formatting, dataset_attr, data_args)
     return dataset.map(
         dataset_converter,

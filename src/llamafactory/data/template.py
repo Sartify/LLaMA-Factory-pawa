@@ -12,12 +12,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import json
 import re
 from copy import deepcopy
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Optional, Union
+from typing import TYPE_CHECKING, Any, Optional, Union
 
 from typing_extensions import override
+
+from llamafactory.data.tool_utils import TOOLS, FunctionCall, ToolUtils
 
 from ..extras import logging
 from .data_utils import Role
@@ -1990,17 +1993,73 @@ class PawaTemplate(Template):
         return jinja_template
 
 
+PAWA_TOOL_PROMPT = (
+    "\n\n# Tools\n\nYou may call one or more functions to assist with the user query.\n\n"
+    "You are provided with function signatures within <tools></tools> XML tags:\n<tools>{tool_text}"
+    "\n</tools>\n\nFor each function call, return a json object with function name and arguments within "
+    """<tool_call></tool_call> XML tags:\n<tool_call>\n{{"name": <function-name>, """
+    """"arguments": <args-json-object>}}\n</tool_call>"""
+)
+
+
+class PawaToolUtils(ToolUtils):
+    r"""Modified from Qwen 2.5 tool using template."""
+
+    @override
+    @staticmethod
+    def tool_formatter(tools: list[dict[str, Any]]) -> str:
+        tool_text = ""
+        for tool in tools:
+            wrapped_tool = tool if tool.get("type") == "function" else {"type": "function", "function": tool}
+            tool_text += "\n" + json.dumps(wrapped_tool, ensure_ascii=False)
+
+        return PAWA_TOOL_PROMPT.format(tool_text=tool_text)
+
+    @override
+    @staticmethod
+    def function_formatter(functions: list["FunctionCall"]) -> str:
+        function_texts = [
+            json.dumps({"name": name, "arguments": json.loads(arguments)}, ensure_ascii=False)
+            for name, arguments in functions
+        ]
+        return "\n".join([f"<tool_call>\n{text}\n</tool_call>" for text in function_texts])
+
+    @override
+    @staticmethod
+    def tool_extractor(content: str) -> Union[str, list["FunctionCall"]]:
+        regex = re.compile(r"<tool_call>(.+?)</tool_call>(?=\s*<tool_call>|\s*$)", re.DOTALL)
+        tool_match: list[str] = re.findall(regex, content)
+        if not tool_match:
+            return content
+
+        results = []
+        for tool in tool_match:
+            try:
+                tool = json.loads(tool.strip())
+            except json.JSONDecodeError:
+                return content
+
+            if "name" not in tool or "arguments" not in tool:
+                return content
+
+            results.append(FunctionCall(tool["name"], json.dumps(tool["arguments"], ensure_ascii=False)))
+
+        return results
+
+
+TOOLS["pawa"] = PawaToolUtils()
+
 # copytied from gemma3 template
 register_template(
     name="gemma3-pawa",
     format_user=StringFormatter(slots=["<start_of_turn>user\n{{content}}<end_of_turn>\n<start_of_turn>model\n"]),
     format_assistant=StringFormatter(slots=["{{content}}<end_of_turn>\n"]),
     format_system=StringFormatter(slots=["{{content}}\n\n"]),
-    format_function=FunctionFormatter(slots=["{{content}}<end_of_turn>\n"], tool_format="qwen"),
+    format_function=FunctionFormatter(slots=["{{content}}<end_of_turn>\n"], tool_format="pawa"),
     format_observation=StringFormatter(
         slots=["<start_of_turn>tool\n{{content}}<end_of_turn>\n<start_of_turn>model\n"]
     ),
-    format_tools=ToolFormatter(tool_format="qwen"),
+    format_tools=ToolFormatter(tool_format="pawa"),
     format_prefix=EmptyFormatter(slots=[{"bos_token"}]),
     stop_words=["<end_of_turn>"],
     replace_eos=True,
@@ -2008,6 +2067,7 @@ register_template(
     template_class=PawaTemplate,
     replace_jinja_template=True,
 )
+
 
 # tools = [{
 #     "name": "search",
