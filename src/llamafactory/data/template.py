@@ -635,7 +635,6 @@ register_template(
     replace_jinja_template=True,
 )
 
-
 register_template(
     name="aquila",
     format_user=StringFormatter(slots=["Human: {{content}}###Assistant:"]),

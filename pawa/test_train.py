@@ -1,13 +1,9 @@
-from typing import Any
-
 from llamafactory.data import get_dataset, get_template_and_fix_tokenizer
 from llamafactory.extras.customized_utils import fix_chat_template_for_processor
-from llamafactory.hparams import parser, read_args
-from llamafactory.model import load_tokenizer
-
 from llamafactory.hparams.data_args import DataArguments
 from llamafactory.hparams.model_args import ModelArguments
 from llamafactory.hparams.training_args import TrainingArguments
+from llamafactory.model import load_tokenizer
 
 
 train_args = TrainingArguments(
@@ -31,11 +27,13 @@ tokenizer_module = load_tokenizer(model_args)
 tokenizer = tokenizer_module["tokenizer"]
 template = get_template_and_fix_tokenizer(tokenizer, data_args)
 dataset_module = get_dataset(template, model_args, data_args, train_args, stage="sft", **tokenizer_module)
-# print(dataset_module)
-# print(tokenizer_module)
-# print(tokenizer_module["processor"].tokenizer.chat_template)
+
+
+assert tokenizer_module["processor"] is not None
+
 fix_chat_template_for_processor(tokenizer_module["processor"])
-print(tokenizer_module["processor"].chat_template)
+
+
 tokenizer_module["processor"].save_pretrained("outputs/test_outputs")
 # for key in tokenizer_module:
 #     print()

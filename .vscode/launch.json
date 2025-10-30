@@ -10,7 +10,7 @@
       "cwd": "${workspaceFolder}"
     },
     {
-      "name": "TorchRun Training Debug",
+      "name": "test freeze",
       "type": "python",
       "request": "launch",
       "module": "torch.distributed.run",

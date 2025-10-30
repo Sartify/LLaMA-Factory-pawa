@@ -2,7 +2,7 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "Run TorchRun Test Freeze",
+      "label": "test freeze",
       "type": "shell",
       "command": "torchrun",
       "args": [
